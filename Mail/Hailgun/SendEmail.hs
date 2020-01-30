@@ -43,6 +43,13 @@ toSimpleEmailParts :: HailgunMessage -> [(BC.ByteString, BC.ByteString)]
 toSimpleEmailParts message =
    [ (BC.pack "from", messageFrom message)
    , (BC.pack "subject", T.encodeUtf8 $ messageSubject message)
+   -- we want to omit the `Sender` header to avoid shenanigans with some email
+   -- clients when the `Sender` header and the `From` field don't originate from
+   -- the same root domain. in some circumstances this caused the "reply"
+   -- feature to break by attempting to use the `Sender`, which is
+   -- undeliverable, instead of the `From` address. this magic header is
+   -- undocumented and may break at literally any time. godspeed.
+   , (BC.pack "h:X-Mailgun-Rewrite-Sender-Header", BC.pack "false")
    ] ++ to
    ++ cc
    ++ bcc
