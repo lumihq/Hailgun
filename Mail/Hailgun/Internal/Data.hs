@@ -20,9 +20,14 @@ import           Control.Applicative
 import           Data.Aeson
 import qualified Data.ByteString      as B
 import qualified Data.ByteString.Lazy as BL
+import           Data.Proxy           (Proxy(..))
 import qualified Data.Text            as T
 import           Data.Time.Clock      (UTCTime (..))
-import           Data.Time.Format     (ParseTime (..), parseTime)
+#if MIN_VERSION_time(1,9,0)
+import           Data.Time.Format     (ParseTime, parseTimeM)
+#else
+import           Data.Time.Format     (ParseTime (..), parseTimeM)
+#endif
 import           Data.Time.LocalTime  (zonedTimeToUTC)
 import qualified Network.HTTP.Client  as NHC
 import qualified Text.Email.Validate  as TEV
@@ -31,6 +36,10 @@ import qualified Text.Email.Validate  as TEV
 import           Data.Time.Format     (defaultTimeLocale)
 #else
 import           System.Locale        (defaultTimeLocale)
+#endif
+
+#if MIN_VERSION_time(1,9,3)
+import Data.Time.Format.Internal      (ParseTime(..))
 #endif
 
 type UnverifiedEmailAddress = B.ByteString -- ^ Represents an email address that is not yet verified.
@@ -153,7 +162,7 @@ newtype HailgunTime = HailgunTime UTCTime
 -- Example Input: 'Thu, 13 Oct 2011 18:02:00 GMT'
 instance FromJSON HailgunTime where
    parseJSON = withText "HailgunTime" $ \t ->
-      case parseTime defaultTimeLocale "%a, %d %b %Y %T %Z" (T.unpack t) of
+      case parseTimeM True defaultTimeLocale "%a, %d %b %Y %T %Z" (T.unpack t) of
          Just d -> pure d
          _      -> fail "could not parse Mailgun Style date"
 
@@ -162,4 +171,7 @@ instance ParseTime HailgunTime where
    buildTime l input = HailgunTime . zonedTimeToUTC <$> buildTime l input
 #else
    buildTime l = HailgunTime . zonedTimeToUTC . buildTime l
+#endif
+#if MIN_VERSION_time(1,9,1)
+   parseTimeSpecifier _ = parseTimeSpecifier (Proxy :: Proxy UTCTime)
 #endif

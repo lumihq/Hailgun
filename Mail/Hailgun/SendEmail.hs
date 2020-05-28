@@ -14,7 +14,7 @@ import           Mail.Hailgun.Errors
 import           Mail.Hailgun.Internal.Data
 import           Mail.Hailgun.MailgunApi
 import           Mail.Hailgun.PartUtil
-import           Network.HTTP.Client                   (httpLbs, withManager)
+import           Network.HTTP.Client                   (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
 import           Network.HTTP.Client.TLS               (tlsManagerSettings)
 import           Text.Email.Validate                   (EmailAddress,
@@ -28,7 +28,7 @@ sendEmail
    -> IO (Either HailgunErrorResponse HailgunSendResponse) -- ^ The result of the sent email. Either a sent email or a successful send.
 sendEmail context message = do
    request <- postRequest url context (toEmailParts message)
-   response <- withManager tlsManagerSettings (httpLbs request)
+   response <- httpLbs request =<< newManager tlsManagerSettings
    return $ parseResponse response
    where
       url = mailgunApiPrefixContext context ++ "/messages"
