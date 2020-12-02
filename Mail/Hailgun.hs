@@ -9,6 +9,13 @@ module Mail.Hailgun
    , addAttachment
    , HailgunContext(..)
    , HailgunMessage
+   , messageSubject
+   , messageContent
+   , messageFrom
+   , messageTo
+   , messageCC
+   , messageBCC
+   , messageAttachments
    , MessageSubject
    , MessageContent(..)
    , MessageRecipients(..)
