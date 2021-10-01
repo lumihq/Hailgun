@@ -24,12 +24,24 @@ hailgunMessage
    -> MessageRecipients -- ^ The people that should recieve this email.
    -> [Attachment] -- ^ The attachments that you want to attach to the email; standard or inline.
    -> Either HailgunErrorMessage HailgunMessage -- ^ Either an error while trying to create a valid message or a valid message.
-hailgunMessage subject content sender recipients simpleAttachments = do
+hailgunMessage subject content sender recipients simpleAttachments =
+   hailgunMessageWithReplyTo subject content sender recipients simpleAttachments Nothing
+
+hailgunMessageWithReplyTo
+   :: MessageSubject
+   -> MessageContent
+   -> UnverifiedEmailAddress
+   -> MessageRecipients
+   -> [Attachment]
+   -> Maybe UnverifiedEmailAddress
+   -> Either HailgunErrorMessage HailgunMessage
+hailgunMessageWithReplyTo subject content sender recipients simpleAttachments replyTo = do
    from  <- validateRecipient sender
    to    <- mapM validateRecipient (recipientsTo recipients)
    cc    <- mapM validateRecipient (recipientsCC recipients)
    bcc   <- mapM validateRecipient (recipientsBCC recipients)
    attachments <- attachmentsInferredFromMessage content cleanAttachments
+   replyToAddr <- validateRecipient `traverse` replyTo
    return HailgunMessage
       { messageSubject = subject
       , messageContent = content
@@ -38,6 +50,7 @@ hailgunMessage subject content sender recipients simpleAttachments = do
       , messageCC = cc
       , messageBCC = bcc
       , messageAttachments = attachments
+      , messageReplyTo = replyToAddr
       }
    where
       cleanAttachments = fmap cleanAttachmentFilePath simpleAttachments

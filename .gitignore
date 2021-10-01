@@ -2,10 +2,13 @@
 *~
 .*.sw[a-p]
 
+tags
+
 # Build Files
 /.cabal-sandbox
 /cabal.sandbox.config
 /dist
+/dist-newstyle
 /.stack-work
 
 # Config File
