@@ -1,5 +1,6 @@
 module Mail.Hailgun.Message
     ( hailgunMessage
+    , hailgunMessageWithReplyTo
     ) where
 
 import           Control.Applicative
