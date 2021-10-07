@@ -28,6 +28,9 @@ hailgunMessage
 hailgunMessage subject content sender recipients simpleAttachments =
    hailgunMessageWithReplyTo subject content sender recipients simpleAttachments Nothing
 
+-- | A method to construct a HailgunMessage with a Reply-To custom header. Right now the "Reply-To"
+-- part is hardcoded, if we need to extend hailgun with more custom headers we should switch to a
+-- list of (name, value) pairs.
 hailgunMessageWithReplyTo
    :: MessageSubject
    -> MessageContent
