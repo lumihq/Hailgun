@@ -53,11 +53,15 @@ toSimpleEmailParts message =
    ] ++ to
    ++ cc
    ++ bcc
+   ++ replyTo
    ++ fromContent (messageContent message)
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
       bcc = convertEmails (BC.pack "bcc") . messageBCC $ message
+      replyTo = case messageReplyTo message of
+         Nothing -> []
+         Just email -> [(BC.pack "h:reply-to", email)]
 
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]
