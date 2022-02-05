@@ -16,30 +16,30 @@ module Mail.Hailgun.Internal.Data
     , AttachmentType(..)
     ) where
 
-import           Control.Applicative
-import           Data.Aeson
-import qualified Data.ByteString      as B
+import Control.Applicative
+import Data.Aeson
+import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
-import           Data.Proxy           (Proxy(..))
-import qualified Data.Text            as T
-import           Data.Time.Clock      (UTCTime (..))
+import Data.Proxy (Proxy(..))
+import qualified Data.Text as T
+import Data.Time.Clock (UTCTime(..))
 #if MIN_VERSION_time(1,9,0)
-import           Data.Time.Format     (ParseTime, parseTimeM)
+import Data.Time.Format (ParseTime, parseTimeM)
 #else
-import           Data.Time.Format     (ParseTime (..), parseTimeM)
+import Data.Time.Format (ParseTime(..), parseTimeM)
 #endif
-import           Data.Time.LocalTime  (zonedTimeToUTC)
-import qualified Network.HTTP.Client  as NHC
-import qualified Text.Email.Validate  as TEV
+import Data.Time.LocalTime (zonedTimeToUTC)
+import qualified Network.HTTP.Client as NHC
+import qualified Text.Email.Validate as TEV
 
 #if MIN_VERSION_time(1,5,0)
-import           Data.Time.Format     (defaultTimeLocale)
+import Data.Time.Format (defaultTimeLocale)
 #else
-import           System.Locale        (defaultTimeLocale)
+import System.Locale (defaultTimeLocale)
 #endif
 
 #if MIN_VERSION_time(1,9,3)
-import Data.Time.Format.Internal      (ParseTime(..))
+import Data.Time.Format.Internal (ParseTime(..))
 #endif
 
 type UnverifiedEmailAddress = B.ByteString -- ^ Represents an email address that is not yet verified.
@@ -95,6 +95,7 @@ data HailgunMessage = HailgunMessage
    , messageCC          :: [VerifiedEmailAddress]
    , messageBCC         :: [VerifiedEmailAddress]
    , messageReplyTo     :: Maybe VerifiedEmailAddress
+   , messageInReplyTo   :: Maybe UnverifiedEmailAddress
    , messageAttachments :: [SpecificAttachment]
    }
    deriving (Show)

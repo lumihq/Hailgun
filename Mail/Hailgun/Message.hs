@@ -3,17 +3,17 @@ module Mail.Hailgun.Message
     , hailgunMessageWithReplyTo
     ) where
 
-import           Control.Applicative
-import           Data.Either                        (either)
-import qualified Data.ByteString.Char8              as BC
-import qualified Data.Text                          as T
-import           Data.Text.Encoding                 (encodeUtf8, decodeUtf8)
-import           Data.List                          (find)
-import           Mail.Hailgun.Attachment.Internal
-import           Mail.Hailgun.AttachmentsSearch
-import           Mail.Hailgun.Internal.Data
-import           Text.Email.Validate
-import           Data.Attoparsec.Text
+import Control.Applicative
+import Data.Attoparsec.Text
+import qualified Data.ByteString.Char8 as BC
+import Data.Either (either)
+import Data.List (find)
+import qualified Data.Text as T
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import Mail.Hailgun.Attachment.Internal
+import Mail.Hailgun.AttachmentsSearch
+import Mail.Hailgun.Internal.Data
+import Text.Email.Validate
 
 -- | A method to construct a HailgunMessage. You require a subject, content, From address and people
 -- to send the email to and it will give you back a valid Hailgun email message. Or it will error
@@ -55,6 +55,7 @@ hailgunMessageWithReplyTo subject content sender recipients simpleAttachments re
       , messageBCC = bcc
       , messageAttachments = attachments
       , messageReplyTo = replyToAddr
+      , messageInReplyTo = Nothing
       }
    where
       cleanAttachments = fmap cleanAttachmentFilePath simpleAttachments

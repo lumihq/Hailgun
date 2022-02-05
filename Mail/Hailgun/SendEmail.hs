@@ -3,22 +3,21 @@ module Mail.Hailgun.SendEmail
     , HailgunSendResponse(..)
     ) where
 
-import           Control.Applicative
-import           Control.Monad                         (mzero)
-import           Data.Aeson
-import qualified Data.ByteString.Char8                 as BC
-import qualified Data.Text                             as T
-import qualified Data.Text.Encoding                    as T
-import           Mail.Hailgun.Communication
-import           Mail.Hailgun.Errors
-import           Mail.Hailgun.Internal.Data
-import           Mail.Hailgun.MailgunApi
-import           Mail.Hailgun.PartUtil
-import           Network.HTTP.Client                   (httpLbs, newManager)
+import Control.Applicative
+import Control.Monad (mzero)
+import Data.Aeson
+import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
+import Mail.Hailgun.Communication
+import Mail.Hailgun.Errors
+import Mail.Hailgun.Internal.Data
+import Mail.Hailgun.MailgunApi
+import Mail.Hailgun.PartUtil
+import Network.HTTP.Client (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
-import           Network.HTTP.Client.TLS               (tlsManagerSettings)
-import           Text.Email.Validate                   (EmailAddress,
-                                                        toByteString)
+import Network.HTTP.Client.TLS (tlsManagerSettings)
+import Text.Email.Validate (EmailAddress, toByteString)
 
 -- | Send an email using the Mailgun API's. This method is capable of sending a message over the
 -- Mailgun service. All it needs is the appropriate context.
@@ -54,6 +53,7 @@ toSimpleEmailParts message =
    ++ cc
    ++ bcc
    ++ replyTo
+   ++ inReplyTo
    ++ fromContent (messageContent message)
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
@@ -62,6 +62,10 @@ toSimpleEmailParts message =
       replyTo = case messageReplyTo message of
          Nothing -> []
          Just email -> [(BC.pack "h:reply-to", email)]
+
+      inReplyTo = case messageInReplyTo message of
+         Nothing -> []
+         Just email -> [(BC.pack "h:in-reply-to", email)]
 
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]
