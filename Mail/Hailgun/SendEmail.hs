@@ -65,7 +65,7 @@ toSimpleEmailParts message =
 
       inReplyTo = case messageInReplyTo message of
          Nothing -> []
-         Just email -> [(BC.pack "h:in-reply-to", email)]
+         Just email -> [(BC.pack "h:In-Reply-To", email)]
 
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]
