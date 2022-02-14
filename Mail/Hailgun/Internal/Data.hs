@@ -94,8 +94,9 @@ data HailgunMessage = HailgunMessage
    , messageTo          :: [VerifiedEmailAddress]
    , messageCC          :: [VerifiedEmailAddress]
    , messageBCC         :: [VerifiedEmailAddress]
-   , messageReplyTo     :: Maybe VerifiedEmailAddress
-   , messageInReplyTo   :: Maybe UnverifiedEmailAddress
+   , messageReplyTo :: Maybe VerifiedEmailAddress
+   , messageInReplyTo :: Maybe UnverifiedEmailAddress
+   , messageReferences :: Maybe B.ByteString
    , messageAttachments :: [SpecificAttachment]
    }
    deriving (Show)
