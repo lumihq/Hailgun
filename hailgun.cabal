@@ -74,7 +74,7 @@ library
 
    build-depends:         base               >= 4.6 && < 5
                         , aeson              >= 0.8
-                        , bytestring         >= 0.10.4 && <= 0.11
+                        , bytestring         >= 0.10.4 && <= 0.12
                         , email-validate     >= 2.0 && < 2.4
                         , exceptions         >= 0.8
                         , filepath           >= 1 && < 2
@@ -85,7 +85,7 @@ library
                         , text               == 1.2.*
                         , transformers       >= 0.3 && < 0.6
                         , filepath           >= 1 && < 2
-                        , attoparsec         >= 0.13 && < 0.14
+                        , attoparsec         >= 0.13 && < 0.15
 
    if flag(newtime)
       Build-Depends:    time >= 1.5
