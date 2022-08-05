@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Mail.Hailgun.Errors
     ( HailgunErrorResponse(..) -- TODO Make it so that herMessage is a hidden detail in the next version
     , toHailgunError
@@ -24,7 +25,7 @@ toHailgunError = HailgunErrorResponse
 
 instance FromJSON HailgunErrorResponse where
    parseJSON (Object v) = HailgunErrorResponse
-      <$> v .: T.pack "message"
+      <$> v .: "message"
    parseJSON _ = mzero
 
 serverError :: Either HailgunErrorResponse a
