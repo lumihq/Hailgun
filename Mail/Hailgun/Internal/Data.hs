@@ -29,6 +29,7 @@ import Data.Time.Format (ParseTime(..), parseTimeM)
 #endif
 import Data.Time.LocalTime (zonedTimeToUTC)
 import qualified Network.HTTP.Client as NHC
+import Data.HashMap.Strict as HMS
 
 #if MIN_VERSION_time(1,5,0)
 import Data.Time.Format (defaultTimeLocale)
@@ -43,6 +44,9 @@ import Data.Time.Format.Internal (ParseTime(..))
 type UnverifiedEmailAddress = B.ByteString -- ^ Represents an email address that is not yet verified.
 type VerifiedEmailAddress = B.ByteString -- ^ Represents an email address that has been verified.
 type MessageSubject = T.Text -- ^ Represents a message subject.
+type MessageTag = T.Text -- ^ Represents a message tag.
+
+type RecipientVariables = HMS.HashMap VerifiedEmailAddress (HMS.HashMap T.Text Value) -- ^ Recipient variables when using a template. While this type has "Value" it should be only String/Number/Bool
 
 -- | A generic error message that is returned by the Hailgun library.
 type HailgunErrorMessage = String
@@ -78,6 +82,9 @@ data MessageContent
       { textContent :: B.ByteString -- ^ The text content that you wish to send (please note that many clients will take the HTML version first if it is present but that the text version is a great fallback).
       , htmlContent :: B.ByteString -- ^ The HTML content that you wish to send.
       }
+   | Template
+      { templateName :: T.Text
+      }
    deriving (Show)
 
 
@@ -86,19 +93,20 @@ data MessageContent
 -- the content of the message. Any email that you wish to send via this api must be converted into
 -- this structure first. To create a message then please use the hailgunMessage interface.
 data HailgunMessage = HailgunMessage
-   { messageSubject     :: MessageSubject
-   , messageContent     :: MessageContent
-   , messageFrom        :: VerifiedEmailAddress
-   , messageTo          :: [VerifiedEmailAddress]
-   , messageCC          :: [VerifiedEmailAddress]
-   , messageBCC         :: [VerifiedEmailAddress]
-   , messageReplyTo :: Maybe VerifiedEmailAddress
-   , messageInReplyTo :: Maybe UnverifiedEmailAddress
-   , messageReferences :: Maybe B.ByteString
-   , messageAttachments :: [SpecificAttachment]
+   { messageSubject            :: MessageSubject
+   , messageContent            :: MessageContent
+   , messageFrom               :: VerifiedEmailAddress
+   , messageTo                 :: [VerifiedEmailAddress]
+   , messageCC                 :: [VerifiedEmailAddress]
+   , messageBCC                :: [VerifiedEmailAddress]
+   , messageReplyTo            :: Maybe VerifiedEmailAddress
+   , messageInReplyTo          :: Maybe UnverifiedEmailAddress
+   , messageReferences         :: Maybe B.ByteString
+   , messageAttachments        :: [SpecificAttachment]
+   , messageTags               :: [MessageTag]
+   , messageRecipientVariables :: RecipientVariables
    }
    deriving (Show)
-   -- TODO o:tag support
    -- TODO o:campaign support
    -- messageDKIMSupport :: Bool TODO o:dkim support
    -- TODO o:deliverytime support for up to three days in the future

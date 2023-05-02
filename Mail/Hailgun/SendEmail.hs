@@ -16,6 +16,7 @@ import Mail.Hailgun.PartUtil
 import Network.HTTP.Client (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
 import Network.HTTP.Client.TLS (tlsManagerSettings)
+import qualified Data.HashMap.Lazy as HML
 
 -- | Send an email using the Mailgun API's. This method is capable of sending a message over the
 -- Mailgun service. All it needs is the appropriate context.
@@ -54,13 +55,23 @@ toSimpleEmailParts message =
    ++ inReplyTo
    ++ references
    ++ fromContent (messageContent message)
+   ++ tags
+   ++ recipientVariables
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
       bcc = convertEmails (BC.pack "bcc") . messageBCC $ message
+      tags = map (\t -> (BC.pack "o:tag", T.encodeUtf8 t)) . messageTags $ message
+      recipientVariables =
+         if null (messageRecipientVariables message)
+         then []
+         else [(BC.pack "recipient-variables"
+              , BC.toStrict $ encode $ map (\(e, d) -> (T.decodeUtf8 e, d)) $ HML.toList $ messageRecipientVariables message
+              )]
+
       replyTo = case messageReplyTo message of
          Nothing -> []
-         Just email -> [(BC.pack "h:reply-to", email)]
+         Just email -> [(BC.pack "h:Reply-to", email)]
 
       references = case messageReferences message of
          Nothing -> []
@@ -73,6 +84,7 @@ toSimpleEmailParts message =
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]
       fromContent th@(TextAndHTML {}) = (BC.pack "html", htmlContent th) : fromContent (TextOnly . textContent $ th)
+      fromContent (Template templateName) = [ (BC.pack "template", T.encodeUtf8 templateName) ]
 
       convertEmails :: BC.ByteString -> [VerifiedEmailAddress] -> [(BC.ByteString, BC.ByteString)]
       convertEmails prefix = fmap ((,) prefix)
