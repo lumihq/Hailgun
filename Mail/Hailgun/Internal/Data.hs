@@ -7,6 +7,7 @@ module Mail.Hailgun.Internal.Data
     , UnverifiedEmailAddress
     , VerifiedEmailAddress
     , MessageRecipients(..)
+    , RecipientVariables
     , emptyMessageRecipients
     , HailgunErrorMessage
     , HailgunTime(..)
