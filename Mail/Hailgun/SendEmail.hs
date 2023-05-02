@@ -16,7 +16,6 @@ import Mail.Hailgun.PartUtil
 import Network.HTTP.Client (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
 import Network.HTTP.Client.TLS (tlsManagerSettings)
-import qualified Data.HashMap.Lazy as HML
 
 -- | Send an email using the Mailgun API's. This method is capable of sending a message over the
 -- Mailgun service. All it needs is the appropriate context.
@@ -66,7 +65,7 @@ toSimpleEmailParts message =
          if null (messageRecipientVariables message)
          then []
          else [(BC.pack "recipient-variables"
-              , BC.toStrict $ encode $ HML.toList $ messageRecipientVariables message
+              , BC.toStrict $ encode $ messageRecipientVariables message
               )]
 
       replyTo = case messageReplyTo message of
