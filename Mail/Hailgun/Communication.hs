@@ -13,13 +13,12 @@ import           Control.Monad.IO.Class                (MonadIO (..))
 import           Data.Aeson
 import qualified Data.ByteString.Char8                 as BC
 import qualified Data.ByteString.Lazy.Char8            as BLC
-import           Data.Foldable                         (foldMap)
 import           Data.Monoid
 import           Mail.Hailgun.Errors
 import           Mail.Hailgun.Internal.Data
 import qualified Network.HTTP.Client                   as NC
 import           Network.HTTP.Client.Internal          (addProxy)
-import           Network.HTTP.Client.MultipartFormData (Part (..), formDataBody)
+import           Network.HTTP.Client.MultipartFormData (Part, formDataBody)
 import qualified Network.HTTP.Types.Method             as NM
 import qualified Network.HTTP.Types.Status             as NT
 
@@ -76,6 +75,3 @@ parseResponse response = statusToResponse . NT.statusCode . NC.responseStatus $ 
 
 responseDecode :: (FromJSON a) => NC.Response BLC.ByteString -> Either HailgunErrorResponse a
 responseDecode = mapError . eitherDecode . NC.responseBody
-
-ignoreStatus :: a -> b -> c -> Maybe d
-ignoreStatus _ _ _ = Nothing

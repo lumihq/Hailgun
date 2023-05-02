@@ -6,7 +6,6 @@ module Mail.Hailgun.Message
 import Control.Applicative
 import Data.Attoparsec.Text
 import qualified Data.ByteString.Char8 as BC
-import Data.Either (either)
 import Data.List (find)
 import qualified Data.Text as T
 import Data.Text.Encoding (decodeUtf8, encodeUtf8)
@@ -56,6 +55,7 @@ hailgunMessageWithReplyTo subject content sender recipients simpleAttachments re
       , messageAttachments = attachments
       , messageReplyTo = replyToAddr
       , messageInReplyTo = Nothing
+      , messageReferences = Nothing
       }
    where
       cleanAttachments = fmap cleanAttachmentFilePath simpleAttachments
