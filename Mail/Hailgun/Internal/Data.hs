@@ -47,7 +47,7 @@ type VerifiedEmailAddress = B.ByteString -- ^ Represents an email address that h
 type MessageSubject = T.Text -- ^ Represents a message subject.
 type MessageTag = T.Text -- ^ Represents a message tag.
 
-type RecipientVariables = HMS.HashMap VerifiedEmailAddress (HMS.HashMap T.Text Value) -- ^ Recipient variables when using a template. While this type has "Value" it should be only String/Number/Bool
+type RecipientVariables = HMS.HashMap T.Text (HMS.HashMap T.Text Value) -- ^ Recipient variables when using a template. While this type has "Value" it should be only String/Number/Bool
 
 -- | A generic error message that is returned by the Hailgun library.
 type HailgunErrorMessage = String

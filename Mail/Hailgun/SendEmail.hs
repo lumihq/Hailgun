@@ -66,7 +66,7 @@ toSimpleEmailParts message =
          if null (messageRecipientVariables message)
          then []
          else [(BC.pack "recipient-variables"
-              , BC.toStrict $ encode $ map (\(e, d) -> (T.decodeUtf8 e, d)) $ HML.toList $ messageRecipientVariables message
+              , BC.toStrict $ encode $ HML.toList $ messageRecipientVariables message
               )]
 
       replyTo = case messageReplyTo message of
