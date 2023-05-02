@@ -16,6 +16,7 @@ import Mail.Hailgun.PartUtil
 import Network.HTTP.Client (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
 import Network.HTTP.Client.TLS (tlsManagerSettings)
+import Data.Time (UTCTime, formatTime, defaultTimeLocale)
 
 -- | Send an email using the Mailgun API's. This method is capable of sending a message over the
 -- Mailgun service. All it needs is the appropriate context.
@@ -56,6 +57,7 @@ toSimpleEmailParts message =
    ++ fromContent (messageContent message)
    ++ tags
    ++ recipientVariables
+   ++ deliveryTime
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
@@ -67,6 +69,13 @@ toSimpleEmailParts message =
          else [(BC.pack "recipient-variables"
               , BC.toStrict $ encode $ messageRecipientVariables message
               )]
+
+      formatUTC :: UTCTime -> String
+      formatUTC = formatTime defaultTimeLocale "%a, %_d %b %Y %H:%M:%S %z"
+
+      deliveryTime = case messageDeliveryTime message of
+         Nothing -> []
+         Just t -> [(BC.pack "o:deliverytime", BC.pack $ formatUTC t)]
 
       replyTo = case messageReplyTo message of
          Nothing -> []

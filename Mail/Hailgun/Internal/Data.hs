@@ -106,11 +106,11 @@ data HailgunMessage = HailgunMessage
    , messageAttachments        :: [SpecificAttachment]
    , messageTags               :: [MessageTag]
    , messageRecipientVariables :: RecipientVariables
+   , messageDeliveryTime       :: Maybe UTCTime
    }
    deriving (Show)
    -- TODO o:campaign support
    -- messageDKIMSupport :: Bool TODO o:dkim support
-   -- TODO o:deliverytime support for up to three days in the future
    -- TODO o:testmode support
    -- TODO o:tracking support
    -- TODO o:tracking-clicks support

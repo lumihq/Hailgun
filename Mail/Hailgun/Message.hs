@@ -58,6 +58,7 @@ hailgunMessageWithReplyTo subject content sender recipients simpleAttachments re
       , messageReferences = Nothing
       , messageTags = []
       , messageRecipientVariables = mempty
+      , messageDeliveryTime = Nothing
       }
    where
       cleanAttachments = fmap cleanAttachmentFilePath simpleAttachments
