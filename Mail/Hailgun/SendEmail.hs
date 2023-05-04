@@ -58,6 +58,7 @@ toSimpleEmailParts message =
    ++ tags
    ++ recipientVariables
    ++ deliveryTime
+   ++ testMode
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
@@ -76,6 +77,10 @@ toSimpleEmailParts message =
       deliveryTime = case messageDeliveryTime message of
          Nothing -> []
          Just t -> [(BC.pack "o:deliverytime", BC.pack $ formatUTC t)]
+
+      testMode = if messageTestMode message
+         then [(BC.pack "o:testmode", BC.pack $ "yes")]
+         else []
 
       replyTo = case messageReplyTo message of
          Nothing -> []

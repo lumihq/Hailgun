@@ -107,11 +107,10 @@ data HailgunMessage = HailgunMessage
    , messageTags               :: [MessageTag]
    , messageRecipientVariables :: RecipientVariables
    , messageDeliveryTime       :: Maybe UTCTime
+   , messageTestMode           :: Bool -- ^ Mailgun will not send the message, however it will still charge the account for it
    }
    deriving (Show)
-   -- TODO o:campaign support
    -- messageDKIMSupport :: Bool TODO o:dkim support
-   -- TODO o:testmode support
    -- TODO o:tracking support
    -- TODO o:tracking-clicks support
    -- TODO o:tracking-opens support
