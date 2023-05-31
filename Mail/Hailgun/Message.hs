@@ -56,6 +56,10 @@ hailgunMessageWithReplyTo subject content sender recipients simpleAttachments re
       , messageReplyTo = replyToAddr
       , messageInReplyTo = Nothing
       , messageReferences = Nothing
+      , messageTags = []
+      , messageRecipientVariables = mempty
+      , messageDeliveryTime = Nothing
+      , messageTestMode = False
       }
    where
       cleanAttachments = fmap cleanAttachmentFilePath simpleAttachments
@@ -76,6 +80,7 @@ attachmentsInferredFromMessage mContent simpleAttachments =
    case mContent of
       (TextOnly _) -> return . fmap toStandardAttachment $ simpleAttachments
       th@(TextAndHTML {}) -> convertAttachments simpleAttachments (findInlineImagesInHtmlEmail . htmlContent $ th)
+      (Template _) ->  return . fmap toStandardAttachment $ simpleAttachments
 
 convertAttachments :: [Attachment] -> [InlineImage] -> Either String [SpecificAttachment]
 convertAttachments attachments images = do

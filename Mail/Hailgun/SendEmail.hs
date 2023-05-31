@@ -16,6 +16,7 @@ import Mail.Hailgun.PartUtil
 import Network.HTTP.Client (httpLbs, newManager)
 import qualified Network.HTTP.Client.MultipartFormData as NCM
 import Network.HTTP.Client.TLS (tlsManagerSettings)
+import Data.Time (UTCTime, formatTime, defaultTimeLocale)
 
 -- | Send an email using the Mailgun API's. This method is capable of sending a message over the
 -- Mailgun service. All it needs is the appropriate context.
@@ -54,13 +55,36 @@ toSimpleEmailParts message =
    ++ inReplyTo
    ++ references
    ++ fromContent (messageContent message)
+   ++ tags
+   ++ recipientVariables
+   ++ deliveryTime
+   ++ testMode
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
       bcc = convertEmails (BC.pack "bcc") . messageBCC $ message
+      tags = map (\t -> (BC.pack "o:tag", T.encodeUtf8 t)) . messageTags $ message
+      recipientVariables =
+         if null (messageRecipientVariables message)
+         then []
+         else [(BC.pack "recipient-variables"
+              , BC.toStrict $ encode $ messageRecipientVariables message
+              )]
+
+      formatUTC :: UTCTime -> String
+      formatUTC = formatTime defaultTimeLocale "%a, %_d %b %Y %H:%M:%S %z"
+
+      deliveryTime = case messageDeliveryTime message of
+         Nothing -> []
+         Just t -> [(BC.pack "o:deliverytime", BC.pack $ formatUTC t)]
+
+      testMode = if messageTestMode message
+         then [(BC.pack "o:testmode", BC.pack $ "yes")]
+         else []
+
       replyTo = case messageReplyTo message of
          Nothing -> []
-         Just email -> [(BC.pack "h:reply-to", email)]
+         Just email -> [(BC.pack "h:Reply-to", email)]
 
       references = case messageReferences message of
          Nothing -> []
@@ -73,6 +97,7 @@ toSimpleEmailParts message =
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]
       fromContent th@(TextAndHTML {}) = (BC.pack "html", htmlContent th) : fromContent (TextOnly . textContent $ th)
+      fromContent (Template templateName) = [ (BC.pack "template", T.encodeUtf8 templateName) ]
 
       convertEmails :: BC.ByteString -> [VerifiedEmailAddress] -> [(BC.ByteString, BC.ByteString)]
       convertEmails prefix = fmap ((,) prefix)
