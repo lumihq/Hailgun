@@ -59,6 +59,7 @@ toSimpleEmailParts message =
    ++ recipientVariables
    ++ deliveryTime
    ++ testMode
+   ++ mId
    where
       to = convertEmails (BC.pack "to") . messageTo $ message
       cc = convertEmails (BC.pack "cc") . messageCC $ message
@@ -79,7 +80,7 @@ toSimpleEmailParts message =
          Just t -> [(BC.pack "o:deliverytime", BC.pack $ formatUTC t)]
 
       testMode = if messageTestMode message
-         then [(BC.pack "o:testmode", BC.pack $ "yes")]
+         then [(BC.pack "o:testmode", BC.pack "yes")]
          else []
 
       replyTo = case messageReplyTo message of
@@ -93,6 +94,10 @@ toSimpleEmailParts message =
       inReplyTo = case messageInReplyTo message of
          Nothing -> []
          Just email -> [(BC.pack "h:In-Reply-To", email)]
+
+      mId = case messageId message of
+         Nothing -> []
+         Just i -> [(BC.pack "h:Message-ID", T.encodeUtf8 i)]
 
       fromContent :: MessageContent -> [(BC.ByteString, BC.ByteString)]
       fromContent t@(TextOnly _) = [ (BC.pack "text", textContent t) ]

@@ -2,6 +2,7 @@
 module Mail.Hailgun.Internal.Data
     ( HailgunContext(..)
     , HailgunMessage(..)
+    , MessageId
     , MessageSubject
     , MessageContent(..)
     , UnverifiedEmailAddress
@@ -46,6 +47,7 @@ type UnverifiedEmailAddress = B.ByteString -- ^ Represents an email address that
 type VerifiedEmailAddress = B.ByteString -- ^ Represents an email address that has been verified.
 type MessageSubject = T.Text -- ^ Represents a message subject.
 type MessageTag = T.Text -- ^ Represents a message tag.
+type MessageId = T.Text -- ^ Represents a message Id.
 
 type RecipientVariables = HMS.HashMap T.Text (HMS.HashMap T.Text Value) -- ^ Recipient variables when using a template. While this type has "Value" it should be only String/Number/Bool
 
@@ -94,7 +96,8 @@ data MessageContent
 -- the content of the message. Any email that you wish to send via this api must be converted into
 -- this structure first. To create a message then please use the hailgunMessage interface.
 data HailgunMessage = HailgunMessage
-   { messageSubject            :: MessageSubject
+   { messageId                 :: Maybe MessageId -- ^ An optional ID that uniquely identifies the message. Mailgun will use this as the ID if provided
+   , messageSubject            :: MessageSubject
    , messageContent            :: MessageContent
    , messageFrom               :: VerifiedEmailAddress
    , messageTo                 :: [VerifiedEmailAddress]
