@@ -46,7 +46,8 @@ hailgunMessageWithReplyTo subject content sender recipients simpleAttachments re
    attachments <- attachmentsInferredFromMessage content cleanAttachments
    replyToAddr <- validateRecipient `traverse` replyTo
    return HailgunMessage
-      { messageSubject = subject
+      { messageId = Nothing
+      , messageSubject = subject
       , messageContent = content
       , messageFrom = from
       , messageTo = to
